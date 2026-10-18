@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 AI Fire Alarm System — Live Demo | Muhammad Usman</title>
+<meta name="description" content="AI-Based Fire Alarm System by Muhammad Usman — computer vision flame detection with live browser demo.">
+<style>
+:root{--bg:#0c0c0e;--bg2:#141416;--card:#1a1a1e;--red:#ff3b30;--amber:#f5a623;--green:#30d158;--text:#f2ede4;--muted:#a8a29a;--line:#2a2a30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6}
+a{color:var(--amber);text-decoration:none}
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 5%;background:rgba(12,12,14,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{font-size:1.5rem;font-weight:800}.brand span{color:var(--red)}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.92rem}.nav-links a:hover{color:var(--amber)}
+.live-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,59,48,.12);border:1px solid var(--red);color:var(--red);font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px;letter-spacing:1px}
+.live-pill .dot{width:9px;height:9px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+/* hero */
+.hero{text-align:center;padding:130px 5% 50px;background:radial-gradient(ellipse at 50% 0%,#2a1210 0%,var(--bg) 65%)}
+.hero h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;margin:18px 0 10px}
+.hero h1 .fire{color:var(--red)}
+.hero p{color:var(--muted);max-width:640px;margin:0 auto 8px}
+.hero .by{color:var(--amber);font-weight:600}
+/* lab */
+.section{padding:56px 5%;max-width:1100px;margin:0 auto}
+.section h2{font-size:1.8rem;margin-bottom:8px}
+.section h2::after{content:'';display:block;width:56px;height:3px;background:var(--red);border-radius:2px;margin-top:8px}
+.sub{color:var(--muted);margin-bottom:24px;max-width:760px}
+.scenarios{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.scn{background:var(--card);border:1px solid var(--line);color:var(--text);padding:10px 20px;border-radius:999px;cursor:pointer;font-size:.92rem;font-family:inherit;transition:all .2s}
+.scn:hover{border-color:var(--amber)}
+.scn.active{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+.lab{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+@media(max-width:860px){.lab{grid-template-columns:1fr}}
+.stage{position:relative;background:#000;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.stage canvas{width:100%;display:block;aspect-ratio:16/9}
+.dash{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.status{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;padding:12px 16px;border-radius:12px;background:rgba(48,209,88,.1);border:1px solid var(--green)}
+.status.alarm{background:rgba(255,59,48,.14);border-color:var(--red);color:var(--red);animation:blink 1s infinite}
+.status .dot{width:12px;height:12px;border-radius:50%;background:var(--green)}
+.status.alarm .dot{background:var(--red)}
+.meter label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.meter .bar{height:8px;background:#2a2a30;border-radius:4px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--red));border-radius:4px;transition:width .2s}
+.alarm-log{background:#0c0c0e;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.82rem;max-height:150px;overflow-y:auto;font-family:monospace}
+.alarm-log div{padding:3px 0;color:var(--muted)}
+.alarm-log div.hot{color:var(--red);font-weight:700}
+.alarm-log div.ok{color:var(--green)}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:var(--red);color:#fff;padding:12px 28px;border-radius:999px;font-weight:700;border:none;cursor:pointer;font-size:.95rem;font-family:inherit}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn.ghost.on{border-color:var(--amber);color:var(--amber)}
+.note{font-size:.82rem;color:var(--muted)}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+.card:hover{border-color:var(--red)}
+.card .n{font-size:1.8rem;font-weight:800;color:var(--red)}
+.card h3{margin:8px 0 6px}
+.card p{color:var(--muted);font-size:.9rem}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+th{color:var(--amber);font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+.pass{color:var(--green);font-weight:700}
+/* code */
+.codebox{background:#0c0c0e;border:1px solid var(--line);border-radius:12px;padding:20px;overflow-x:auto;font-family:monospace;font-size:.82rem;color:#c9d1d9;margin-bottom:16px}
+.link-row{display:flex;gap:12px;flex-wrap:wrap}
+footer{text-align:center;padding:36px 5%;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer::before{content:'';display:block;height:3px;background:linear-gradient(90deg,transparent,var(--red),transparent);margin:-36px 0 36px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="brand" href="#top">🔥<span>FireAlarm</span></a>
+  <div class="nav-links">
+    <a href="#lab">Live Demo</a><a href="#how">How It Works</a><a href="#tests">Tests</a><a href="#code">Code</a>
+    <span class="live-pill"><span class="dot"></span>LIVE</span>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <span class="live-pill"><span class="dot"></span>REAL-TIME DETECTION RUNNING IN YOUR BROWSER</span>
+  <h1><span class="fire">AI-Based</span> Fire Alarm System</h1>
+  <p>A computer-vision fire alarm that watches a camera feed, detects flames and raises the alarm — no smoke-sensor hardware needed. The detection below runs <b>live</b>, frame by frame, right here.</p>
+  <p class="by">by Muhammad Usman · Roll No. 025</p>
+</header>
+
+<main>
+<section class="section" id="lab">
+  <h2>🔬 Live Detection Lab</h2>
+  <p class="sub">Press play — the AI analyses every frame <b>live</b>: flame colours (HSV), flicker check, temporal alarm. Switch scenarios to see it catch fire and stay silent on a safe room.</p>
+  <div class="scenarios">
+    <button class="scn active" data-v="assets/real_fire.mp4">🔥 Real Fireplace</button>
+    <button class="scn" data-v="assets/synth_fire.mp4">🔥 Lab Fire Test</button>
+    <button class="scn" data-v="assets/no_fire.mp4">🟢 Safe Room (no fire)</button>
+  </div>
+  <div class="lab">
+    <div class="stage"><canvas id="stage" width="640" height="360"></canvas></div>
+    <div class="dash">
+      <div class="status" id="status"><span class="dot"></span><span id="status-t">Press play to start</span></div>
+      <div class="meter"><label><span>Flame pixels</span><span id="flame-v">0%</span></label><div class="bar"><i id="flame-b"></i></div></div>
+      <div class="meter"><label><span>Flicker (flames dance)</span><span id="flick-v">0</span></label><div class="bar"><i id="flick-b"></i></div></div>
+      <div class="alarm-log" id="log"><div>— alarm log ready —</div></div>
+      <div class="controls">
+        <button class="btn" id="play">▶ Play</button>
+        <button class="btn ghost on" id="snd">🔊 Siren on</button>
+      </div>
+      <p class="note">Same algorithm as the Python system: HSV segmentation → flicker gate → 5-of-10 temporal alarm.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <h2>⚙️ How It Works</h2>
+  <p class="sub">Four stages, from pixels to alarm — pure computer vision, no training data, runs on CPU.</p>
+  <div class="cards">
+    <div class="card"><div class="n">1</div><h3>Colour Segmentation</h3><p>Each frame goes to HSV colour space; red→orange→yellow pixels that are bright and saturated are extracted as flame candidates.</p></div>
+    <div class="card"><div class="n">2</div><h3>Noise Cleanup</h3><p>Morphological open/close removes speckles. Only blobs above a minimum area count — tiny glints are ignored.</p></div>
+    <div class="card"><div class="n">3</div><h3>Flicker Check</h3><p>Real flames dance. The flame area must jitter frame-to-frame — this rejects static orange objects like lamps or posters.</p></div>
+    <div class="card"><div class="n">4</div><h3>Temporal Alarm</h3><p>Fire must be confirmed in 5 of the last 10 frames before the alarm fires; 15 quiet frames reset it. No single-frame false alarms.</p></div>
+  </div>
+</section>
+
+<section class="section" id="tests">
+  <h2>✅ Test Results</h2>
+  <p class="sub">Measured on real video — the same numbers the Python system produced.</p>
+  <table>
+    <tr><th>Test</th><th>Expected</th><th>Result</th></tr>
+    <tr><td>Real fireplace clip (246 frames)</td><td>Alarm</td><td class="pass">✅ PASS — alarm at 0.3 s</td></tr>
+    <tr><td>Lab fire video (8 s fire + 4 s calm)</td><td>Alarm, then clear</td><td class="pass">✅ PASS — alarm on, auto-clears</td></tr>
+    <tr><td>Safe room + static orange lamp (90 frames)</td><td>Silent</td><td class="pass">✅ PASS — flicker gate rejects lamp</td></tr>
+    <tr><td>Unit tests (pytest)</td><td>6/6</td><td class="pass">✅ 6/6 passed</td></tr>
+  </table>
+</section>
+
+<section class="section" id="code">
+  <h2>💻 Code & Report</h2>
+  <p class="sub">Full Python system — detector, CLI app, tests and report.</p>
+  <div class="codebox"><pre style="font-family:monospace">fire-alarm/
+├── fire_detector.py   # FireDetector: HSV + flicker + temporal alarm
+├── main.py            # CLI: video file / webcam → annotated output + siren
+├── make_synth_fire.py # synthetic fire test-video generator
+├── tests/             # 6 unit tests + 3 test videos
+└── README.md</pre></div>
+  <div class="link-row">
+    <a class="btn" href="https://github.com/Usmankalera-dev/fire-alarm-system" target="_blank" rel="noopener">View on GitHub</a>
+    <a class="btn ghost" href="Fire_Alarm_System_Report_Muhammad_Usman_025.docx" download>📄 Download Report</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p>🔥 AI-Based Fire Alarm System · Muhammad Usman (025) · Built with Python, OpenCV & Computer Vision</p>
+</footer>
+
+<script>
+// ============ LIVE FIRE DETECTOR (mirrors fire_detector.py) ============
+const DET_W = 320, DET_H = 176;
+const MIN_RATIO = 0.0015, ALARM_NEED = 5, ALARM_WIN = 10;
+const CLEAR_NEED = 15, FLICK_WIN = 12, FLICK_MIN = 0.03;
+let D;
+function detReset(){ D = {hist:[], ratios:[], quiet:0, alarm:false}; }
+detReset();
+function isFlame(h,s,v){ return v>=0.51 && s>=0.43 && (h<=60 || h>=330); }
+function detect(img){
+  const d = img.data;
+  let firePx=0, x0=DET_W, y0=DET_H, x1=-1, y1=-1;
+  for(let y=0; y<DET_H; y++){
+    for(let x=0; x<DET_W; x++){
+      const i=(y*DET_W+x)*4, r=d[i]/255, g=d[i+1]/255, b=d[i+2]/255;
+      const mx=Math.max(r,g,b), mn=Math.min(r,g,b), df=mx-mn;
+      let h=0; const v=mx, s=mx===0?0:df/mx;
+      if(df>0){
+        if(mx===r) h=((g-b)/df)%6; else if(mx===g) h=(b-r)/df+2; else h=(r-g)/df+4;
+        h*=60; if(h<0) h+=360;
+      }
+      if(isFlame(h,s,v)){ firePx++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    }
+  }
+  const ratio = firePx/(DET_W*DET_H);
+  const fire = ratio >= MIN_RATIO;
+  D.ratios.push(ratio); if(D.ratios.length>FLICK_WIN) D.ratios.shift();
+  let flicker=0;
+  if(D.ratios.length>=6){
+    const m=D.ratios.reduce((a,c)=>a+c,0)/D.ratios.length;
+    if(m>1e-6){
+      const sd=Math.sqrt(D.ratios.reduce((a,c)=>a+(c-m)*(c-m),0)/D.ratios.length);
+      flicker=Math.min(1, sd/m);
+    }
+  }
+  const confirmed = fire && flicker>=FLICK_MIN;
+  D.hist.push(confirmed); if(D.hist.length>ALARM_WIN) D.hist.shift();
+  if(confirmed) D.quiet=0; else D.quiet++;
+  const before=D.alarm;
+  if(!D.alarm && D.hist.filter(Boolean).length>=ALARM_NEED) D.alarm=true;
+  if(D.alarm && D.quiet>=CLEAR_NEED) D.alarm=false;
+  return {fire, ratio, flicker, confirmed, alarm:D.alarm,
+          rose:D.alarm&&!before, fell:!D.alarm&&before,
+          box: fire?{x:x0,y:y0,w:x1-x0,y:y1-y0}:null};
+}
+
+// ============ STAGE / UI ============
+const stage=document.getElementById('stage'), ctx=stage.getContext('2d');
+const SW=stage.width, SH=stage.height;
+const video=document.createElement('video');
+video.muted=true; video.playsInline=true; video.preload='auto';
+video.src='assets/real_fire.mp4';
+const dcv=document.createElement('canvas'); dcv.width=DET_W; dcv.height=DET_H;
+const dctx=dcv.getContext('2d',{willReadFrequently:true});
+const statusEl=document.getElementById('status'), statusT=document.getElementById('status-t');
+const flameB=document.getElementById('flame-b'), flameV=document.getElementById('flame-v');
+const flickB=document.getElementById('flick-b'), flickV=document.getElementById('flick-v');
+const logEl=document.getElementById('log');
+const playBtn=document.getElementById('play'), sndBtn=document.getElementById('snd');
+let soundOn=true, actx=null, sirenNodes=null;
+
+function log(msg, cls){
+  const t=new Date().toLocaleTimeString();
+  const div=document.createElement('div'); if(cls)div.className=cls;
+  div.textContent=t+' — '+msg; logEl.prepend(div);
+  while(logEl.children.length>14) logEl.lastChild.remove();
+}
+function siren(on){
+  if(!soundOn) on=false;
+  if(on && !sirenNodes){
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type='square'; o.frequency.value=660; g.gain.value=0.04;
+    const lfo=actx.createOscillator(), lg=actx.createGain();
+    lfo.type='square'; lfo.frequency.value=1.6; lg.gain.value=110;
+    lfo.connect(lg); lg.connect(o.frequency);
+    o.connect(g); g.connect(actx.destination);
+    o.start(); lfo.start(); sirenNodes={o,lfo};
+  } else if(!on && sirenNodes){
+    try{sirenNodes.o.stop();sirenNodes.lfo.stop();}catch(e){}
+    sirenNodes=null;
+  }
+}
+function setStatus(alarm){
+  statusEl.classList.toggle('alarm', alarm);
+  statusT.textContent = alarm ? '🔥 FIRE DETECTED — ALARM!' : '● Monitoring… no fire';
+}
+let lastBox=null;
+function tick(){
+  if(video.paused || video.ended){ requestAnimationFrame(tick); return; }
+  dctx.drawImage(video,0,0,DET_W,DET_H);
+  const res=detect(dctx.getImageData(0,0,DET_W,DET_H));
+  ctx.drawImage(video,0,0,SW,SH);
+  const sx=SW/DET_W, sy=SH/DET_H;
+  if(res.box){
+    lastBox=res.box;
+    const bx=res.box.x*sx, by=res.box.y*sy, bw=res.box.w*sx, bh=res.box.h*sy;
+    ctx.strokeStyle='#ff3b30'; ctx.lineWidth=3; ctx.strokeRect(bx,by,bw,bh);
+    ctx.fillStyle='#ff3b30'; ctx.font='bold 15px sans-serif';
+    ctx.fillText('FLAME', bx, Math.max(16,by-8));
+  }
+  // banner
+  ctx.fillStyle = res.alarm ? '#ff3b30' : 'rgba(0,120,0,.92)';
+  ctx.fillRect(0,0,SW,52);
+  ctx.fillStyle='#fff'; ctx.font='bold 21px sans-serif';
+  ctx.fillText(res.alarm?'🔥 FIRE DETECTED — ALARM!':'NO FIRE — monitoring…', 16, 35);
+  ctx.fillStyle='rgba(255,255,255,.95)'; ctx.font='13px sans-serif';
+  ctx.fillText('flame: '+(res.ratio*100).toFixed(2)+'%   flicker: '+res.flicker.toFixed(2), 16, SH-14);
+  // dashboard
+  setStatus(res.alarm);
+  flameB.style.width=Math.min(100,res.ratio*100*8)+'%';
+  flameV.textContent=(res.ratio*100).toFixed(2)+'%';
+  flickB.style.width=(res.flicker*100)+'%';
+  flickV.textContent=res.flicker.toFixed(2);
+  if(res.rose){ log('🔥 FIRE DETECTED — alarm ON','hot'); siren(true); }
+  if(res.fell){ log('✅ all clear — alarm OFF','ok'); siren(false); }
+  requestAnimationFrame(tick);
+}
+playBtn.addEventListener('click', ()=>{
+  if(actx && actx.state==='suspended') actx.resume();
+  if(video.paused){ video.play(); playBtn.textContent='⏸ Pause'; }
+  else{ video.pause(); playBtn.textContent='▶ Play'; siren(false); }
+});
+video.addEventListener('ended', ()=>{ playBtn.textContent='▶ Replay'; siren(false); });
+sndBtn.addEventListener('click', ()=>{
+  soundOn=!soundOn;
+  sndBtn.textContent=soundOn?'🔊 Siren on':'🔇 Siren off';
+  sndBtn.classList.toggle('on',soundOn);
+  if(!soundOn) siren(false);
+});
+document.querySelectorAll('.scn').forEach(b=>b.addEventListener('click', ()=>{
+  document.querySelectorAll('.scn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  video.pause(); video.src=b.dataset.v; video.load();
+  detReset(); siren(false); setStatus(false);
+  logEl.innerHTML='<div>— scenario: '+b.textContent.trim()+' —</div>';
+  flameB.style.width='0'; flickB.style.width='0';
+  playBtn.textContent='▶ Play';
+}));
+// paint first frame once metadata loads
+video.addEventListener('loadeddata', ()=>{
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,SW,SH);
+  ctx.drawImage(video,0,0,SW,SH);
+  ctx.fillStyle='rgba(0,120,0,.92)'; ctx.fillRect(0,0,SW,52);
+  ctx.fillStyle='#fff'; ctx.font='bold 21px sans-serif';
+  ctx.fillText('NO FIRE — monitoring…',16,35);
+});
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
